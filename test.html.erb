@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  </head>
+  <body>
+    <h1>test! !! !! !! !! !! !! !! !! !! !! !! !!</h1>
+    <% require 'pg' %>
+    <% connection = PG::connect(dbname: "goya") %>
+    <% connection.internal_encoding = "UTF-8" %>
+    <form action="indicate.cgi" method="POST">
+       Please enter the characters below<br><br>
+      <input type="text"  name="input" ><br>
+      <input type="submit" name="送信">
+    </form>
+
+    <% result = connection.exec("SELECT weight,quality, give_for FROM crops WHERE quality ='f';") %>
+    <% data = [] %>
+    <% result.each do |record| %>
+      <%  data << "Size of bitter gourd: #{record["weight"]} Sold to: #{record["give_for"]} Quqlity: #{record["quality"]}"%>
+    <% end%>
+    <form action = "goya.cgi"  method = "POST" >
+       Press the button below to jump to the information displaying a page with goya information of poor quality (false) when the button is pressed.. <br> <br>
+       <!-Assign the data you want to send to value->
+       <!- --use name = "goya" as a marker for information->
+      <input  type = "text" name = "goya" value="<%= data.join(' ') %>">
+      <input type="submit"name="送信">
+    </form>
+
+    <% result = connection.exec("SELECT weight, give_for FROM crops WHERE NOT give_for='自家消費';") %>
+    <% data = [] %>
+    <% result.each do |record| %>
+      <%  data << "Size of bitter gourd: #{record["weight"]} Sold to: #{record["give_for"]}"%>
+    <% end%>
+    <form action = "goya.cgi"  method = "POST" >
+       Press the button below to jump to the information page displaying goya informatoion related not self-consumption. <br> <br>
+       <!-Assign the data you want to send to value->
+       <!- --use name = "goya" as a marker for information->
+      <input  type = "text" name = "goya" value="<%= data.join(' ') %>">
+      <input type="submit"name="送信" >
+    </form>
+
+  </body>
+</html>
